@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>STEMidy Quiz</title>
+    <style>
+        body {
+            font-family: Arial;
+            background: #0a0a2e;
+            color: white;
+            text-align: center;
+            padding: 40px;
+        }
+        .question-box {
+            background: #111;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px auto;
+            width: 60%;
+        }
+        button {
+            padding: 10px 20px;
+            margin: 10px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+<h1>🚀 STEMidy Quiz</h1>
+
+<div class="question-box">
+    <h2 id="question">Loading...</h2>
+    <div id="options"></div>
+</div>
+
+<button onclick="nextQuestion()">Next</button>
+
+<script>
+const questions = [
+    {
+        q: "What keeps planets in orbit?",
+        options: ["Magnetism", "Gravity", "Electric force"],
+        answer: 1
+    },
+    {
+        q: "Red Planet?",
+        options: ["Earth", "Mars", "Venus"],
+        answer: 1
+    }
+];
+
+let current = 0;
+let score = 0;
+
+function loadQuestion() {
+    let q = questions[current];
+    document.getElementById("question").innerText = q.q;
+
+    let optionsHTML = "";
+    q.options.forEach((opt, i) => {
+        optionsHTML += `<button onclick="select(${i})">${opt}</button><br>`;
+    });
+
+    document.getElementById("options").innerHTML = optionsHTML;
+}
+
+function select(i) {
+    if (i === questions[current].answer) {
+        score++;
+    }
+}
+
+function nextQuestion() {
+    current++;
+    if (current < questions.length) {
+        loadQuestion();
+    } else {
+        finish();
+    }
+}
+
+function finish() {
+    document.body.innerHTML = `<h1>Score: ${score}</h1>`;
+
+    fetch("http://localhost:5000/submit-score", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ score: score })
+    });
+}
+
+loadQuestion();
+</script>
+
+</body>
+</html>
